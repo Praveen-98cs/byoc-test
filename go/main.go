@@ -1,24 +1,47 @@
 package main
 
 import (
-	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"runtime"
+	"time"
 )
 
 func main() {
-	intentional build failure
-	http.HandleFunc("/", handleRequest)
-	fmt.Println("Server is running...")
-	log.Fatal(http.ListenAndServe(":9090", nil))
+	http.HandleFunc("/", handleRoot)
+	http.HandleFunc("/trigger", handleTrigger)
+
+	log.Printf("Server starting ...")
+	if err := http.ListenAndServe(":9090", nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
-func handleRequest(w http.ResponseWriter, r *http.Request) {
-	param := r.URL.Query().Get("message")
-	log.Printf("Received message: %s", param)
-	if param == "" {
-		fmt.Fprintf(w, "No message provided. Use ?message=YourMessage in the URL.")
+func handleRoot(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "OOMKill Simulator\n")
+	io.WriteString(w, "Send a POST request to /trigger to simulate OOMKill\n")
+}
+
+func handleTrigger(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	fmt.Fprintf(w, "Received message: %s", param)
+
+	go simulateOOMKill()
+
+	io.WriteString(w, "OOMKill simulation triggered\n")
+}
+
+func simulateOOMKill() {
+	log.Println("Starting OOMKill simulation")
+
+	var mem [][]int
+	for {
+		mem = append(mem, make([]int, 1024*1024))
+		log.Printf("Allocated memory: %d MB", len(mem))
+		runtime.GC()
+		time.Sleep(100 * time.Millisecond)
+	}
 }

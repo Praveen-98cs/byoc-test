@@ -1,21 +1,14 @@
 openapi: 3.0.0
 info:
-  title: Simple Message Service
-  description: A simple service that prints a received query parameter
+  title: OOMKill Simulator API
+  description: A service to simulate OOMKill in a Kubernetes cluster
   version: 1.0.0
 
 paths:
   /:
     get:
-      summary: Print received message
-      description: Returns the message provided as a query parameter
-      parameters:
-        - in: query
-          name: message
-          schema:
-            type: string
-          description: The message to be printed
-          required: false
+      summary: Get service information
+      description: Returns basic information about the OOMKill Simulator service
       responses:
         '200':
           description: Successful response
@@ -23,10 +16,29 @@ paths:
             text/plain:
               schema:
                 type: string
-              examples:
-                withMessage:
-                  value: "Received message: Hello World"
-                withoutMessage:
-                  value: "No message provided. Use ?message=YourMessage in the URL."
+              example: |
+                OOMKill Simulator
+                Send a POST request to /trigger to simulate OOMKill
 
-components: {}
+  /trigger:
+    post:
+      summary: Trigger OOMKill simulation
+      description: Starts the process of allocating memory to simulate an OOMKill
+      responses:
+        '200':
+          description: Successful trigger
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: OOMKill simulation triggered
+        '405':
+          description: Method not allowed
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Method not allowed
+
+components:
+  schemas: { }
