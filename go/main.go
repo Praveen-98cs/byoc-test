@@ -4,7 +4,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"runtime"
 	"time"
 )
 
@@ -39,9 +38,8 @@ func simulateOOMKill() {
 
 	var mem [][]int
 	for {
-		mem = append(mem, make([]int, 1024*1024))
+		mem = append(mem, make([]int, 1024*1024*100))
 		log.Printf("Allocated memory: %d MB", len(mem))
-		runtime.GC()
 		time.Sleep(100 * time.Millisecond)
 	}
 }
