@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	intentional build failure
 	http.HandleFunc("/", handleRequest)
 	fmt.Println("Server is running...")
 	log.Fatal(http.ListenAndServe(":9090", nil))
