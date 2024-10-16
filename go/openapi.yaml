@@ -1,85 +1,32 @@
-openapi: 3.0.1
+openapi: 3.0.0
 info:
-  title: Choreo BYOC Examples
-  description: This repository contains demo API implemented in different frameworks to showcase capabilities of choreo.
-  version: '0.1'
+  title: Simple Message Service
+  description: A simple service that prints a received query parameter
+  version: 1.0.0
+
 paths:
-  /proxy/:
-    post:
-      description: Auto generated using Swagger Inspector
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                args:
-                  type: string
-                host:
-                  type: string
-            examples:
-              '0':
-                value: |-
-                  {
-                      "host": "http://postman-echo.com",
-                      "args": "get?foo1=bar1&foo2=bar2"
-                  }
-      responses:
-        '200':
-          description: Auto generated using Swagger Inspector
-          content:
-            text/html; charset=utf-8:
-              schema:
-                type: string
-              examples: {}
-  /healthz/:
-    get:
-      description: Auto generated using Swagger Inspector
-      responses:
-        '200':
-          description: Auto generated using Swagger Inspector
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  healthy:
-                    type: boolean
-              examples:
-                '0':
-                  value: |
-                    {"healthy":true}
   /:
     get:
-      description: Auto generated using Swagger Inspector
-      responses:
-        '200':
-          description: Auto generated using Swagger Inspector
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  healthy:
-                    type: boolean
-              examples:
-                '0':
-                  value: |
-                    {"active":true}
-  /hello/:
-    get:
-      description: Auto generated using Swagger Inspector
+      summary: Print received message
+      description: Returns the message provided as a query parameter
       parameters:
-        - name: name
-          in: query
+        - in: query
+          name: message
           schema:
             type: string
-          example: world
+          description: The message to be printed
+          required: false
       responses:
         '200':
-          description: Auto generated using Swagger Inspector
+          description: Successful response
           content:
-            text/html; charset=utf-8:
+            text/plain:
               schema:
                 type: string
-              examples: {}
+              examples:
+                withMessage:
+                  value: "Received message: Hello World"
+                withoutMessage:
+                  value: "No message provided. Use ?message=YourMessage in the URL."
+
+components: {}
