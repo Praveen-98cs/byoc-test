@@ -40,5 +40,18 @@ paths:
                 type: string
               example: Method not allowed
 
+  /crash:
+    get:
+      summary: Crashes the server
+      description: Crashes the server
+      responses:
+        '200':
+          description: Server crashed
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Server crashed
+
 components:
   schemas: { }

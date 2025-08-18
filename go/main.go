@@ -4,11 +4,13 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
 	http.HandleFunc("/", handleRoot)
 	http.HandleFunc("/trigger", handleTrigger)
+	http.HandleFunc("/crash", handleCrash)
 	log.Printf("Server starting ...")
 	if err := http.ListenAndServe(":9090", nil); err != nil {
 		log.Fatal(err)
@@ -27,6 +29,11 @@ func handleTrigger(w http.ResponseWriter, r *http.Request) {
 	}
 	go simulateOOMKill()
 	io.WriteString(w, "OOMKill simulation triggered\n")
+}
+
+func handleCrash(w http.ResponseWriter, r *http.Request) {
+	log.Println("crashing server...")
+	os.Exit(1)
 }
 
 func simulateOOMKill() {
