@@ -53,5 +53,6 @@ func simulateOOMKill() {
 			memory[len(memory)-1][i] = byte(i % 256)
 		}
 		log.Printf("Memory chunk %d filled with data", len(memory))
+		log.Printf("Total chunks allocated: %d", len(memory))
 	}
 }
