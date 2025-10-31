@@ -48,6 +48,7 @@ func simulateOOMKill() {
 		allocatedMB := len(memory) * 500
 		log.Printf("Allocated memory: %d MB", allocatedMB)
 		// Fill the allocated memory with non-zero values
+		log.Println("Starting to fill memory chunk with data...")
 		for i := range memory[len(memory)-1] {
 			memory[len(memory)-1][i] = byte(i % 256)
 		}
