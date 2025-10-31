@@ -41,6 +41,7 @@ func simulateOOMKill() {
 	var memory [][]byte
 	chunkSize := 500 * 1024 * 1024 // 100MB chunks
 	for {
+		log.Printf("Allocating memory chunk %d (%d MB)...", len(memory)+1, chunkSize/(1024*1024))
 		memory = append(memory, make([]byte, chunkSize))
 		allocatedMB := len(memory) * 500
 		log.Printf("Allocated memory: %d MB", allocatedMB)
