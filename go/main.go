@@ -38,6 +38,7 @@ func handleCrash(w http.ResponseWriter, r *http.Request) {
 
 func simulateOOMKill() {
 	log.Println("Starting OOMKill simulation")
+	log.Println("Initializing memory allocation process...")
 	var memory [][]byte
 	chunkSize := 500 * 1024 * 1024 // 100MB chunks
 	for {
