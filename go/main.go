@@ -23,6 +23,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleTrigger(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Received %s request to /trigger endpoint", r.Method)
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
