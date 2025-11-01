@@ -74,3 +74,50 @@ curl http://localhost:9090/
 # Force crash (for testing)
 curl http://localhost:9090/crash
 ```
+
+## Advanced Usage
+
+### Monitoring the Simulation
+
+You can monitor the simulation progress by watching the server logs:
+
+```bash
+# Run with verbose logging
+go run main.go 2>&1 | tee simulation.log
+
+# In another terminal, monitor memory usage
+watch -n 1 'ps aux | grep main | grep -v grep'
+```
+
+### Docker Usage
+
+```bash
+# Build Docker image
+docker build -t oom-simulator ./go/
+
+# Run in container
+docker run -p 9090:9090 oom-simulator
+
+# Run with memory limit (for testing)
+docker run -m 2g -p 9090:9090 oom-simulator
+```
+
+### Testing Scenarios
+
+1. **Basic OOM Test**: Trigger simulation and wait for OOM kill
+2. **Memory Limit Test**: Run with Docker memory constraints
+3. **Load Test**: Multiple concurrent trigger requests
+4. **Monitoring Test**: Track memory allocation patterns
+
+### Response Codes
+
+- `200`: Successful request
+- `405`: Method not allowed (GET on /trigger)
+- `500`: Server error (rare, usually before crash)
+
+### Error Handling
+
+The simulator handles various error conditions:
+- Invalid HTTP methods
+- Server overload scenarios
+- Memory allocation failures
