@@ -1,0 +1,20 @@
+# OOM Kill Simulator Configuration
+server:
+  port: 9090
+  host: "0.0.0.0"
+  timeout: 30s
+
+simulation:
+  chunk_size_mb: 500
+  max_memory_gb: 8
+  delay_between_chunks_ms: 100
+  fill_memory: true
+
+logging:
+  level: "info"
+  format: "json"
+  output: "stdout"
+
+monitoring:
+  metrics_enabled: true
+  health_check_interval: 10s
