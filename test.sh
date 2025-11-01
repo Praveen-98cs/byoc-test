@@ -60,6 +60,35 @@ test_trigger_endpoint_warning() {
     echo "   To test manually: curl -X POST $SERVER_URL/trigger" | tee -a $LOG_FILE
 }
 
+# Test invalid endpoints
+test_invalid_endpoints() {
+    echo "" | tee -a $LOG_FILE
+    echo "Testing invalid endpoints..." | tee -a $LOG_FILE
+    
+    response=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/invalid")
+    if [[ $response == "404" ]]; then
+        echo "✓ Invalid endpoint correctly returns 404" | tee -a $LOG_FILE
+    else
+        echo "✗ Invalid endpoint test failed (got $response)" | tee -a $LOG_FILE
+    fi
+}
+
+# Test server response time
+test_response_time() {
+    echo "" | tee -a $LOG_FILE
+    echo "Testing server response time..." | tee -a $LOG_FILE
+    
+    response_time=$(curl -o /dev/null -s -w "%{time_total}" "$SERVER_URL/")
+    echo "Response time: ${response_time}s" | tee -a $LOG_FILE
+    
+    # Check if response time is reasonable (less than 1 second)
+    if (( $(echo "$response_time < 1.0" | bc -l) )); then
+        echo "✓ Response time is acceptable" | tee -a $LOG_FILE
+    else
+        echo "⚠️  Response time is slow: ${response_time}s" | tee -a $LOG_FILE
+    fi
+}
+
 # Main test execution
 main() {
     echo "Starting automated tests..." | tee -a $LOG_FILE
@@ -68,6 +97,8 @@ main() {
         test_root_endpoint
         test_trigger_endpoint_method
         test_trigger_endpoint_warning
+        test_invalid_endpoints
+        test_response_time
     else
         echo "Cannot run tests - server is not running" | tee -a $LOG_FILE
         echo "Start the server with: go run main.go" | tee -a $LOG_FILE
