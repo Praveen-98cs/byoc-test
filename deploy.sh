@@ -73,6 +73,45 @@ cleanup() {
         docker rmi "$DOCKER_IMAGE" 2>/dev/null || true
         print_status "Removed Docker image: $DOCKER_IMAGE"
     fi
+    
+    # Clean up any test logs
+    if [ -f "test_results.log" ]; then
+        rm "test_results.log"
+        print_status "Removed test logs"
+    fi
+}
+
+# Run tests
+run_tests() {
+    print_status "Running automated tests..."
+    if [ -f "test.sh" ]; then
+        ./test.sh
+    else
+        print_error "Test script not found: test.sh"
+        exit 1
+    fi
+}
+
+# Check system requirements
+check_requirements() {
+    print_status "Checking system requirements..."
+    
+    # Check Go installation
+    if command -v go &> /dev/null; then
+        go_version=$(go version | cut -d' ' -f3)
+        print_status "Go found: $go_version"
+    else
+        print_error "Go is not installed"
+        exit 1
+    fi
+    
+    # Check Docker installation (optional)
+    if command -v docker &> /dev/null; then
+        docker_version=$(docker --version | cut -d' ' -f3 | tr -d ',')
+        print_status "Docker found: $docker_version"
+    else
+        print_warning "Docker not found (optional for local builds)"
+    fi
 }
 
 # Show usage
@@ -84,6 +123,8 @@ show_usage() {
     echo "  docker     - Build Docker image"
     echo "  run        - Run locally (requires build first)"
     echo "  run-docker - Run with Docker (requires docker build first)"
+    echo "  test       - Run automated tests"
+    echo "  check      - Check system requirements"
     echo "  clean      - Clean up binaries and images"
     echo "  help       - Show this help message"
     echo ""
@@ -105,6 +146,12 @@ case "${1:-help}" in
         ;;
     "run-docker")
         run_docker
+        ;;
+    "test")
+        run_tests
+        ;;
+    "check")
+        check_requirements
         ;;
     "clean")
         cleanup
