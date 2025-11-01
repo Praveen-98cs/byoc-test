@@ -92,27 +92,6 @@ run_tests() {
     fi
 }
 
-# Check system requirements
-check_requirements() {
-    print_status "Checking system requirements..."
-    
-    # Check Go installation
-    if command -v go &> /dev/null; then
-        go_version=$(go version | cut -d' ' -f3)
-        print_status "Go found: $go_version"
-    else
-        print_error "Go is not installed"
-        exit 1
-    fi
-    
-    # Check Docker installation (optional)
-    if command -v docker &> /dev/null; then
-        docker_version=$(docker --version | cut -d' ' -f3 | tr -d ',')
-        print_status "Docker found: $docker_version"
-    else
-        print_warning "Docker not found (optional for local builds)"
-    fi
-}
 
 # Show usage
 show_usage() {

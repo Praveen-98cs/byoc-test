@@ -61,19 +61,6 @@ The simulator provides detailed logging:
 
 ### Usage Example
 
-```bash
-# Start the server
-go run main.go
-
-# Trigger OOM simulation
-curl -X POST http://localhost:9090/trigger
-
-# Check server status
-curl http://localhost:9090/
-
-# Force crash (for testing)
-curl http://localhost:9090/crash
-```
 
 ## Advanced Usage
 
