@@ -1,85 +1,57 @@
-openapi: 3.0.1
+openapi: 3.0.0
 info:
-  title: Choreo BYOC Examples
-  description: This repository contains demo API implemented in different frameworks to showcase capabilities of choreo.
-  version: '0.1'
+  title: OOMKill Simulator API
+  description: A service to simulate OOMKill in a Kubernetes cluster
+  version: 1.0.0
+
 paths:
-  /proxy/:
-    post:
-      description: Auto generated using Swagger Inspector
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                args:
-                  type: string
-                host:
-                  type: string
-            examples:
-              '0':
-                value: |-
-                  {
-                      "host": "http://postman-echo.com",
-                      "args": "get?foo1=bar1&foo2=bar2"
-                  }
-      responses:
-        '200':
-          description: Auto generated using Swagger Inspector
-          content:
-            text/html; charset=utf-8:
-              schema:
-                type: string
-              examples: {}
-  /healthz/:
-    get:
-      description: Auto generated using Swagger Inspector
-      responses:
-        '200':
-          description: Auto generated using Swagger Inspector
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  healthy:
-                    type: boolean
-              examples:
-                '0':
-                  value: |
-                    {"healthy":true}
   /:
     get:
-      description: Auto generated using Swagger Inspector
+      summary: Get service information
+      description: Returns basic information about the OOMKill Simulator service
       responses:
         '200':
-          description: Auto generated using Swagger Inspector
+          description: Successful response
           content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  healthy:
-                    type: boolean
-              examples:
-                '0':
-                  value: |
-                    {"active":true}
-  /hello/:
-    get:
-      description: Auto generated using Swagger Inspector
-      parameters:
-        - name: name
-          in: query
-          schema:
-            type: string
-          example: world
-      responses:
-        '200':
-          description: Auto generated using Swagger Inspector
-          content:
-            text/html; charset=utf-8:
+            text/plain:
               schema:
                 type: string
-              examples: {}
+              example: |
+                OOMKill Simulator
+                Send a POST request to /trigger to simulate OOMKill
+
+  /trigger:
+    post:
+      summary: Trigger OOMKill simulation
+      description: Starts the process of allocating memory to simulate an OOMKill
+      responses:
+        '200':
+          description: Successful trigger
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: OOMKill simulation triggered
+        '405':
+          description: Method not allowed
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Method not allowed
+
+  /crash:
+    get:
+      summary: Crashes the server
+      description: Crashes the server
+      responses:
+        '200':
+          description: Server crashed
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Server crashed
+
+components:
+  schemas: { }

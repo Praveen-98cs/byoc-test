@@ -1,0 +1,45 @@
+# OOM Kill Simulator Configuration
+server:
+  port: 9090
+  host: "0.0.0.0"
+  timeout: 30s
+
+simulation:
+  chunk_size_mb: 500
+  max_memory_gb: 8
+  delay_between_chunks_ms: 100
+  fill_memory: true
+
+logging:
+  level: "info"
+  format: "json"
+  output: "stdout"
+
+monitoring:
+  metrics_enabled: true
+  health_check_interval: 10s
+
+# Advanced settings
+debug:
+  enable_profiling: false
+  memory_stats_interval: 5s
+  gc_debug: false
+
+# Resource limits
+limits:
+  max_goroutines: 100
+  max_connections: 1000
+  request_timeout: 30s
+
+# Environment specific overrides
+environments:
+  development:
+    logging:
+      level: "debug"
+    simulation:
+      chunk_size_mb: 100
+  production:
+    logging:
+      level: "warn"
+    limits:
+      max_connections: 5000
