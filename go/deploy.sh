@@ -93,24 +93,20 @@ run_tests() {
 }
 
 
-# Show usage
-show_usage() {
-    echo "Usage: $0 [command]"
-    echo ""
-    echo "Commands:"
-    echo "  build      - Build Go binary"
-    echo "  docker     - Build Docker image"
-    echo "  run        - Run locally (requires build first)"
-    echo "  run-docker - Run with Docker (requires docker build first)"
-    echo "  test       - Run automated tests"
-    echo "  check      - Check system requirements"
-    echo "  clean      - Clean up binaries and images"
-    echo "  help       - Show this help message"
-    echo ""
-    echo "Examples:"
-    echo "  $0 build && $0 run"
-    echo "  $0 docker && $0 run-docker"
+# Check requirements
+check_requirements() {
+    print_status "Checking requirements..."
+    if ! command -v go &> /dev/null; then               
+        print_error "Go is not installed. Please install Go to proceed."
+        exit 1
+    fi  
+
+    if ! command -v docker &> /dev/null; then
+        print_error "Docker is not installed. Please install Docker to proceed."
+        exit 1
+    fi
 }
+
 
 # Main logic
 case "${1:-help}" in

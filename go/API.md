@@ -76,18 +76,6 @@ go run main.go 2>&1 | tee simulation.log
 watch -n 1 'ps aux | grep main | grep -v grep'
 ```
 
-### Docker Usage
-
-```bash
-# Build Docker image
-docker build -t oom-simulator ./go/
-
-# Run in container
-docker run -p 9090:9090 oom-simulator
-
-# Run with memory limit (for testing)
-docker run -m 2g -p 9090:9090 oom-simulator
-```
 
 ### Testing Scenarios
 
@@ -101,6 +89,8 @@ docker run -m 2g -p 9090:9090 oom-simulator
 - `200`: Successful request
 - `405`: Method not allowed (GET on /trigger)
 - `500`: Server error (rare, usually before crash)
+- `504`: Server is not incoming 
+- `201`: Success please check
 
 ### Error Handling
 
