@@ -511,3 +511,10 @@ check_requirements() {
         exit 1
     fi
 }
+
+
+# Run with Docker
+run_docker() {
+    print_status "Running with Docker..."
+    docker run -p 9090:9090 "$DOCKER_IMAGE"
+    

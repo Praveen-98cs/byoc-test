@@ -894,11 +894,6 @@ build_docker() {
     print_status "Docker image built successfully: $DOCKER_IMAGE"
 }
 
-# Run with Docker
-run_docker() {
-    print_status "Running with Docker..."
-    docker run -p 9090:9090 "$DOCKER_IMAGE"
-}
 
 # Clean up
 cleanup() {
@@ -927,21 +922,6 @@ run_tests() {
         ./test.sh
     else
         print_error "Test script not found: test.sh"
-        exit 1
-    fi
-}
-
-
-# Check requirements
-check_requirements() {
-    print_status "Checking requirements..."
-    if ! command -v go &> /dev/null; then               
-        print_error "Go is not installed. Please install Go to proceed."
-        exit 1
-    fi  
-
-    if ! command -v docker &> /dev/null; then
-        print_error "Docker is not installed. Please install Docker to proceed."
         exit 1
     fi
 }
