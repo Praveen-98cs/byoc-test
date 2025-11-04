@@ -472,16 +472,6 @@ cleanup() {
     fi
 }
 
-# Run tests
-run_tests() {
-    print_status "Running automated tests..."
-    if [ -f "test.sh" ]; then
-        ./test.sh
-    else
-        print_error "Test script not found: test.sh"
-        exit 1
-    fi
-}
 
 
 # Check requirements
@@ -517,4 +507,25 @@ check_requirements() {
 run_docker() {
     print_status "Running with Docker..."
     docker run -p 9090:9090 "$DOCKER_IMAGE"
+
+# Build Docker image
+build_docker() {
+    print_status "Building Docker image..."
+    docker build -t "$DOCKER_IMAGE" ./go/
+    print_status "Docker image built successfully: $DOCKER_IMAGE"
+}
+
+
+# Clean up
+cleanup() {
+    print_status "Cleaning up..."
+    if [ -f "$BINARY_NAME" ]; then
+        rm "$BINARY_NAME"
+        print_status "Removed binary: $BINARY_NAME"
+    fi
+    
+    if docker images | grep -q "$PROJECT_NAME"; then
+        docker rmi "$DOCKER_IMAGE" 2>/dev/null || true
+        print_status "Removed Docker image: $DOCKER_IMAGE"
+    fi
     

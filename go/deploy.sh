@@ -932,3 +932,24 @@ run_docker() {
     print_status "Running with Docker..."
     docker run -p 9090:9090 "$DOCKER_IMAGE"
 }
+
+# Check requirements
+check_requirements() {
+    print_status "Checking requirements..."
+    if ! command -v go &> /dev/null; then               
+        print_error "Go is not installed. Please install Go to proceed."
+        exit 1
+    fi  
+
+    if ! command -v docker &> /dev/null; then
+        print_error "Docker is not installed. Please install Docker to proceed."
+        exit 1
+    fi
+}
+
+
+# Run with Docker
+run_docker() {
+    print_status "Running with Docker..."
+    docker run -p 9090:9090 "$DOCKER_IMAGE"
+    
