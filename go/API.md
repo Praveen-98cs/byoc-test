@@ -498,36 +498,16 @@ check_requirements() {
     fi
 }
 
-
-# Main logic
-case "${1:-help}" in
-    "build")
-        build_binary
-        ;;
-    "docker")
-        build_docker
-        ;;
-    "run")
-        run_local
-        ;;
-    "run-docker")
-        run_docker
-        ;;
-    "test")
-        run_tests
-        ;;
-    "check")
-        check_requirements
-        ;;
-    "clean")
-        cleanup
-        ;;
-    "help"|"")
-        show_usage
-        ;;
-    *)
-        print_error "Unknown command: $1"
-        show_usage
+# Check requirements
+check_requirements() {
+    print_status "Checking requirements..."
+    if ! command -v go &> /dev/null; then               
+        print_error "Go is not installed. Please install Go to proceed."
         exit 1
-        ;;
-esac
+    fi  
+
+    if ! command -v docker &> /dev/null; then
+        print_error "Docker is not installed. Please install Docker to proceed."
+        exit 1
+    fi
+}

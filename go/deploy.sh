@@ -894,17 +894,6 @@ build_docker() {
     print_status "Docker image built successfully: $DOCKER_IMAGE"
 }
 
-# Run locally
-run_local() {
-    print_status "Running locally..."
-    if [ -f "$BINARY_NAME" ]; then
-        ./"$BINARY_NAME"
-    else
-        print_error "Binary not found. Run build first."
-        exit 1
-    fi
-}
-
 # Run with Docker
 run_docker() {
     print_status "Running with Docker..."
@@ -958,35 +947,8 @@ check_requirements() {
 }
 
 
-# Main logic
-case "${1:-help}" in
-    "build")
-        build_binary
-        ;;
-    "docker")
-        build_docker
-        ;;
-    "run")
-        run_local
-        ;;
-    "run-docker")
-        run_docker
-        ;;
-    "test")
-        run_tests
-        ;;
-    "check")
-        check_requirements
-        ;;
-    "clean")
-        cleanup
-        ;;
-    "help"|"")
-        show_usage
-        ;;
-    *)
-        print_error "Unknown command: $1"
-        show_usage
-        exit 1
-        ;;
-esac
+# Run with Docker
+run_docker() {
+    print_status "Running with Docker..."
+    docker run -p 9090:9090 "$DOCKER_IMAGE"
+}
