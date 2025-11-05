@@ -472,21 +472,26 @@ cleanup() {
     fi
 }
 
-
-
-# Check requirements
-check_requirements() {
-    print_status "Checking requirements..."
-    if ! command -v go &> /dev/null; then               
-        print_error "Go is not installed. Please install Go to proceed."
-        exit 1
-    fi  
-
-    if ! command -v docker &> /dev/null; then
-        print_error "Docker is not installed. Please install Docker to proceed."
-        exit 1
+# Clean up
+cleanup() {
+    print_status "Cleaning up..."
+    if [ -f "$BINARY_NAME" ]; then
+        rm "$BINARY_NAME"
+        print_status "Removed binary: $BINARY_NAME"
+    fi
+    
+    if docker images | grep -q "$PROJECT_NAME"; then
+        docker rmi "$DOCKER_IMAGE" 2>/dev/null || true
+        print_status "Removed Docker image: $DOCKER_IMAGE"
+    fi
+    
+    # Clean up any test logs
+    if [ -f "test_results.log" ]; then
+        rm "test_results.log"
+        print_status "Removed test logs"
     fi
 }
+
 
 # Check requirements
 check_requirements() {
