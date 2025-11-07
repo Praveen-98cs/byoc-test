@@ -508,19 +508,6 @@ check_requirements() {
 }
 
 
-# Run with Docker
-run_docker() {
-    print_status "Running with Docker..."
-    docker run -p 9090:9090 "$DOCKER_IMAGE"
-
-# Build Docker image
-build_docker() {
-    print_status "Building Docker image..."
-    docker build -t "$DOCKER_IMAGE" ./go/
-    print_status "Docker image built successfully: $DOCKER_IMAGE"
-}
-
-
 # Clean up
 cleanup() {
     print_status "Cleaning up..."
@@ -534,3 +521,16 @@ cleanup() {
         print_status "Removed Docker image: $DOCKER_IMAGE"
     fi
     
+# Function to check if server is running
+check_server() {
+    echo "Checking if server is running..." | tee -a $LOG_FILE
+    if curl -s "$SERVER_URL" > /dev/null 2>&1; then
+        echo "✓ Server is running" | tee -a $LOG_FILE
+        return 0
+    else
+        echo "✗ Server is not running" | tee -a $LOG_FILE
+        return 1
+    fi
+}
+
+

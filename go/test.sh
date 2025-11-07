@@ -43,18 +43,7 @@ test_trigger_endpoint_warning() {
     echo "   To test manually: curl -X POST $SERVER_URL/trigger" | tee -a $LOG_FILE
 }
 
-# Test invalid endpoints
-test_invalid_endpoints() {
-    echo "" | tee -a $LOG_FILE
-    echo "Testing invalid endpoints..." | tee -a $LOG_FILE
-    
-    response=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/invalid")
-    if [[ $response == "404" ]]; then
-        echo "✓ Invalid endpoint correctly returns 404" | tee -a $LOG_FILE
-    else
-        echo "✗ Invalid endpoint test failed (got $response)" | tee -a $LOG_FILE
-    fi
-}
+
 
 # Test server response time
 test_response_time() {
@@ -154,5 +143,18 @@ cleanup() {
     if [ -f "test_results.log" ]; then
         rm "test_results.log"
         print_status "Removed test logs"
+    fi
+
+}
+# Test invalid endpoints
+test_invalid_endpoints() {
+    echo "" | tee -a $LOG_FILE
+    echo "Testing invalid endpoints..." | tee -a $LOG_FILE
+    
+    response=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/invalid")
+    if [[ $response == "404" ]]; then
+        echo "✓ Invalid endpoint correctly returns 404" | tee -a $LOG_FILE
+    else
+        echo "✗ Invalid endpoint test failed (got $response)" | tee -a $LOG_FILE
     fi
 }
