@@ -5,24 +5,7 @@
 
 set -e
 
-SERVER_URL="http://localhost:9090"
-LOG_FILE="test_results.log"
 
-echo "=== OOM Kill Simulator Test Script ===" | tee $LOG_FILE
-echo "Starting tests at $(date)" | tee -a $LOG_FILE
-echo "" | tee -a $LOG_FILE
-
-# Function to check if server is running
-check_server() {
-    echo "Checking if server is running..." | tee -a $LOG_FILE
-    if curl -s "$SERVER_URL" > /dev/null 2>&1; then
-        echo "✓ Server is running" | tee -a $LOG_FILE
-        return 0
-    else
-        echo "✗ Server is not running" | tee -a $LOG_FILE
-        return 1
-    fi
-}
 
 # Test root endpoint
 test_root_endpoint() {
@@ -112,3 +95,64 @@ main() {
 
 # Run tests
 main
+
+    fi
+    
+    if docker images | grep -q "$PROJECT_NAME"; then
+        docker rmi "$DOCKER_IMAGE" 2>/dev/null || true
+        print_status "Removed Docker image: $DOCKER_IMAGE"
+    fi
+    
+    # Clean up any test logs
+    if [ -f "test_results.log" ]; then
+        rm "test_results.log"
+        print_status "Removed test logs"
+    fi
+}
+
+
+# Run with Docker
+run_docker() {
+    print_status "Running with Docker..."
+    docker run -p 9090:9090 "$DOCKER_IMAGE"
+}
+
+# Check requirements
+check_requirements() {
+    print_status "Checking requirements..."
+    if ! command -v go &> /dev/null; then               
+        print_error "Go is not installed. Please install Go to proceed."
+        exit 1
+    fi  
+
+    if ! command -v docker &> /dev/null; then
+        print_error "Docker is not installed. Please install Docker to proceed."
+        exit 1
+    fi
+}
+
+
+# Run with Docker
+run_docker() {
+    print_status "Running with Docker..."
+    docker run -p 9090:9090 "$DOCKER_IMAGE"
+
+# Clean up
+cleanup() {
+    print_status "Cleaning up..."
+    if [ -f "$BINARY_NAME" ]; then
+        rm "$BINARY_NAME"
+        print_status "Removed binary: $BINARY_NAME"
+    fi
+    
+    if docker images | grep -q "$PROJECT_NAME"; then
+        docker rmi "$DOCKER_IMAGE" 2>/dev/null || true
+        print_status "Removed Docker image: $DOCKER_IMAGE"
+    fi
+    
+    # Clean up any test logs
+    if [ -f "test_results.log" ]; then
+        rm "test_results.log"
+        print_status "Removed test logs"
+    fi
+}
