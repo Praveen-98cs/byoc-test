@@ -126,24 +126,6 @@ run_docker() {
     print_status "Running with Docker..."
     docker run -p 9090:9090 "$DOCKER_IMAGE"
 
-# Clean up
-cleanup() {
-    print_status "Cleaning up..."
-    if [ -f "$BINARY_NAME" ]; then
-        rm "$BINARY_NAME"
-        print_status "Removed binary: $BINARY_NAME"
-    fi
-    
-    if docker images | grep -q "$PROJECT_NAME"; then
-        docker rmi "$DOCKER_IMAGE" 2>/dev/null || true
-        print_status "Removed Docker image: $DOCKER_IMAGE"
-    fi
-    
-    # Clean up any test logs
-    if [ -f "test_results.log" ]; then
-        rm "test_results.log"
-        print_status "Removed test logs"
-    fi
 
 }
 # Test invalid endpoints
@@ -158,3 +140,20 @@ test_invalid_endpoints() {
         echo "✗ Invalid endpoint test failed (got $response)" | tee -a $LOG_FILE
     fi
 }
+
+
+
+
+# Clean up
+cleanup() {
+    print_status "Cleaning up..."
+    if [ -f "$BINARY_NAME" ]; then
+        rm "$BINARY_NAME"
+        print_status "Removed binary: $BINARY_NAME"
+    fi
+    
+    if docker images | grep -q "$PROJECT_NAME"; then
+        docker rmi "$DOCKER_IMAGE" 2>/dev/null || true
+        print_status "Removed Docker image: $DOCKER_IMAGE"
+    fi
+    

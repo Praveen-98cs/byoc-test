@@ -507,6 +507,35 @@ check_requirements() {
     fi
 }
 
+# Function to check if server is running
+check_server() {
+    echo "Checking if server is running..." | tee -a $LOG_FILE
+    if curl -s "$SERVER_URL" > /dev/null 2>&1; then
+        echo "✓ Server is running" | tee -a $LOG_FILE
+        return 0
+    else
+        echo "✗ Server is not running" | tee -a $LOG_FILE
+        return 1
+    fi
+}
+
+# Check requirements
+check_requirements() {
+    print_status "Checking requirements..."
+    if ! command -v go &> /dev/null; then               
+        print_error "Go is not installed. Please install Go to proceed."
+        exit 1
+    fi  
+
+    if ! command -v docker &> /dev/null; then
+        print_error "Docker is not installed. Please install Docker to proceed."
+        exit 1
+    fi
+}
+
+
+
+
 
 # Clean up
 cleanup() {
@@ -521,16 +550,3 @@ cleanup() {
         print_status "Removed Docker image: $DOCKER_IMAGE"
     fi
     
-# Function to check if server is running
-check_server() {
-    echo "Checking if server is running..." | tee -a $LOG_FILE
-    if curl -s "$SERVER_URL" > /dev/null 2>&1; then
-        echo "✓ Server is running" | tee -a $LOG_FILE
-        return 0
-    else
-        echo "✗ Server is not running" | tee -a $LOG_FILE
-        return 1
-    fi
-}
-
-
