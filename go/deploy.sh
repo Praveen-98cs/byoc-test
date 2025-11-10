@@ -893,18 +893,4 @@ cleanup() {
 SERVER_URL="http://localhost:9090"
 LOG_FILE="test_results.log"
 
-echo "=== OOM Kill Simulator Test Script ===" | tee $LOG_FILE
-echo "Starting tests at $(date)" | tee -a $LOG_FILE
-echo "" | tee -a $LOG_FILE
-
-# Run with Docker
-run_docker() {
-    print_status "Running with Docker..."
-    docker run -p 9090:9090 "$DOCKER_IMAGE"
-
-# Build Docker image
-build_docker() {
-    print_status "Building Docker image..."
-    docker build -t "$DOCKER_IMAGE" ./go/
-    print_status "Docker image built successfully: $DOCKER_IMAGE"
-}
+"error":"failed to fetch environment template ID: unexpected status code 403: {\"error_message\":\"The access token does not allow you to access the requested resource\",\"code\":\"900910\",\"error_description\":\"User is NOT authorized to access the Resource: /api/v1/organizations/*. Scope validation failed.\"}","stacktrace":"github.com/wso2-enterprise/choreo-rca/internal/services.(*IncidentProcessor).collectIncidentData\n\t/choreo-rca/internal/services/incident_processor.go:136\ngithub.com/wso2-enterprise/choreo-rca/internal/services.(*IncidentProcessor).ProcessIncident\n\t/choreo-rca/internal/services/incident_processor.go:70\ngithub.com/wso2-enterprise/choreo-rca/internal/services.(*EventScanner).incidentProcessingWorker\n\t/choreo-rca/internal/services/event_scanner.go:202"}
