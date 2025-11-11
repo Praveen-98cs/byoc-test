@@ -40,7 +40,7 @@ func init() {
 // loadConfig loads configuration from file and environment variables
 func loadConfig() Config {
 	config := Config{}
-	
+
 	// Set default values
 	config.Server.Port = 9090
 	config.Server.LogLevel = "info"
@@ -49,9 +49,9 @@ func loadConfig() Config {
 	config.Proxy.RequestTimeoutSeconds = 30
 	config.Features.EnableStatusEndpoint = true
 	config.Features.EnableConfigEndpoint = true
-	
-	// Load from config file if CONFIG_PATH is set
-	if configPath := os.Getenv("CONFIG_PATH"); configPath != "" {
+
+	// Load from config file if CONFIG env var is set
+	if configPath := os.Getenv("CONFIG"); configPath != "" {
 		log.Printf("Loading configuration from file: %s", configPath)
 		if data, err := ioutil.ReadFile(configPath); err == nil {
 			if err := json.Unmarshal(data, &config); err != nil {
@@ -63,60 +63,33 @@ func loadConfig() Config {
 			log.Printf("Warning: Failed to read config file: %v", err)
 		}
 	}
-	
+
 	// Override with environment variables (highest priority)
+	// Only 3 env vars supported: PORT, LOG, CONFIG
 	if port := os.Getenv("PORT"); port != "" {
 		if p, err := strconv.Atoi(port); err == nil {
 			config.Server.Port = p
 			log.Printf("Server port overridden by env var: %d", p)
 		}
 	}
-	
-	if logLevel := os.Getenv("LOG_LEVEL"); logLevel != "" {
+
+	if logLevel := os.Getenv("LOG"); logLevel != "" {
 		config.Server.LogLevel = logLevel
 		log.Printf("Log level overridden by env var: %s", logLevel)
 	}
-	
-	if host := os.Getenv("PROXY_HOST"); host != "" {
-		config.Proxy.DefaultHost = host
-		log.Printf("Proxy default host overridden by env var: %s", host)
-	}
-	
-	if path := os.Getenv("PROXY_PATH"); path != "" {
-		config.Proxy.DefaultPath = path
-		log.Printf("Proxy default path overridden by env var: %s", path)
-	}
-	
-	if timeout := os.Getenv("TIMEOUT"); timeout != "" {
-		if t, err := strconv.Atoi(timeout); err == nil {
-			config.Proxy.RequestTimeoutSeconds = t
-			log.Printf("Request timeout overridden by env var: %d", t)
-		}
-	}
-	
-	if enable := os.Getenv("ENABLE_STATUS"); enable != "" {
-		config.Features.EnableStatusEndpoint = enable == "true"
-		log.Printf("Status endpoint enabled: %v", config.Features.EnableStatusEndpoint)
-	}
-	
-	if enable := os.Getenv("ENABLE_CONFIG"); enable != "" {
-		config.Features.EnableConfigEndpoint = enable == "true"
-		log.Printf("Config endpoint enabled: %v", config.Features.EnableConfigEndpoint)
-	}
-	
+
 	return config
 }
-
 
 func main() {
 	// Load configuration
 	appConfig = loadConfig()
-	
+
 	log.Printf("Starting server with configuration:")
 	log.Printf("  Port: %d", appConfig.Server.Port)
 	log.Printf("  Log Level: %s", appConfig.Server.LogLevel)
 	log.Printf("  Proxy Default Host: %s", appConfig.Proxy.DefaultHost)
-	
+
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -130,23 +103,23 @@ func main() {
 	http.HandleFunc("/hello/", func(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(w, "Hello %s", req.URL.Query().Get("name"))
 	})
-	
+
 	// Conditionally register status endpoint
 	if appConfig.Features.EnableStatusEndpoint {
 		http.HandleFunc("/status/", handleStatus)
 		log.Println("Status endpoint enabled at /status/")
 	}
-	
+
 	// Conditionally register config endpoint
 	if appConfig.Features.EnableConfigEndpoint {
 		http.HandleFunc("/config/", handleConfig)
 		log.Println("Config endpoint enabled at /config/")
 	}
-	
+
 	// Crash endpoint for testing container crashes
 	http.HandleFunc("/crash/", handleCrash)
 	log.Println("Crash endpoint enabled at /crash/")
-	
+
 	http.HandleFunc("/proxy/", func(w http.ResponseWriter, req *http.Request) {
 		if req.Method == http.MethodPost {
 			decoder := json.NewDecoder(req.Body)
@@ -262,8 +235,8 @@ func handleConfig(w http.ResponseWriter, r *http.Request) {
 			"enableConfigEndpoint": appConfig.Features.EnableConfigEndpoint,
 		},
 		"configSource": map[string]interface{}{
-			"filePathEnvVar": os.Getenv("CONFIG_PATH"),
-			"loadedFromFile": os.Getenv("CONFIG_PATH") != "",
+			"configPath":     os.Getenv("CONFIG"),
+			"loadedFromFile": os.Getenv("CONFIG") != "",
 		},
 	}
 
@@ -273,16 +246,16 @@ func handleConfig(w http.ResponseWriter, r *http.Request) {
 
 func handleCrash(w http.ResponseWriter, r *http.Request) {
 	log.Println("Crash endpoint called - terminating server...")
-	
+
 	// Send response before crashing
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, "{\"message\": \"Server crashing now...\"}")
-	
+
 	// Force flush the response
 	if f, ok := w.(http.Flusher); ok {
 		f.Flush()
 	}
-	
+
 	// Exit the application to simulate a crash
 	log.Println("Server exiting with code 1")
 	os.Exit(1)

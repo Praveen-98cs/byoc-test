@@ -149,39 +149,34 @@ curl -X POST http://localhost:9090/proxy/ \
 
 ### Configuration
 
-The application supports configuration through both **environment variables** and **file mounts**, making it easy to deploy on platforms like Choreo.
+The application uses a **simplified configuration system** with only **3 environment variables** and **1 file mount**, keeping the Choreo UI clean and minimal.
 
 #### Configuration Priority (highest to lowest):
-1. **Environment Variables** (highest priority)
-2. **Configuration File** (if `CONFIG_PATH` is set)
+1. **Environment Variables** (highest priority - only PORT and LOG)
+2. **Configuration File** (if `CONFIG` is set)
 3. **Default Values** (hardcoded defaults)
 
-#### Environment Variables
+#### Environment Variables (Limited to 3)
 
-You can configure the application using these environment variables:
+The application supports **only 3 environment variables** (max 8 characters each):
 
-- `CONFIG_PATH`: Path to configuration file (e.g., `/config/app-config.json`)
 - `PORT`: Server port (default: `9090`)
-- `LOG_LEVEL`: Logging level - `info`, `debug`, `error` (default: `info`)
-- `PROXY_HOST`: Default host for proxy requests (default: `http://postman-echo.com`)
-- `PROXY_PATH`: Default path for proxy requests (default: `get?foo1=bar1&foo2=bar2`)
-- `TIMEOUT`: Request timeout in seconds (default: `30`)
-- `ENABLE_STATUS`: Enable/disable status endpoint - `true`/`false` (default: `true`)
-- `ENABLE_CONFIG`: Enable/disable config endpoint - `true`/`false` (default: `true`)
+- `LOG`: Logging level - `info`, `debug`, `error` (default: `info`)
+- `CONFIG`: Path to configuration file (default: none)
 
-**Example using environment variables:**
+**Example:**
 ```bash
 export PORT=8080
-export LOG_LEVEL=debug
-export PROXY_HOST=https://api.example.com
+export LOG=debug
+export CONFIG=/config/app-config.json
 go run main.go
 ```
 
 #### Configuration File (File Mount)
 
-You can provide a JSON configuration file and set its path via the `CONFIG_FILE_PATH` environment variable.
+**All other settings** must be configured through a JSON file mount. This includes proxy settings, timeouts, and feature flags.
 
-**Example `config.json`:**
+**Example `app-config.json`:**
 ```json
 {
   "server": {
@@ -200,27 +195,26 @@ You can provide a JSON configuration file and set its path via the `CONFIG_FILE_
 }
 ```
 
-**Example using file mount:**
+**To use a config file:**
 ```bash
-export CONFIG_PATH=/config/app-config.json
+export CONFIG=/config/app-config.json
 go run main.go
 ```
 
 #### Using with Choreo
 
-**Option 1: Environment Variables Only**
-- In Choreo UI, add key-value pairs as environment variables
-- Set individual values like `PORT=8080`, `LOG_LEVEL=debug`
+For the cleanest Choreo UI experience, use:
 
-**Option 2: File Mount Only**
-- In Choreo UI, create a file mount at `/config/app-config.json`
-- Add your JSON configuration as the file content
-- Set environment variable: `CONFIG_PATH=/config/app-config.json`
+**Environment Variables** (3 only):
+- `PORT`: `8080` (or your desired port)
+- `LOG`: `info` (or `debug` for verbose logging)
+- `CONFIG`: `/config/app-config.json` (path to your file mount)
 
-**Option 3: Both (Recommended)**
-- Use file mount for base configuration
-- Use environment variables for overrides and secrets
-- Environment variables take precedence over file configuration
+**File Mount** (1 only):
+- Mount Path: `/config/app-config.json`
+- Content: Your JSON configuration (as shown above)
+
+This approach keeps the Choreo configuration UI minimal while maintaining full configurability through the file mount
 
 ### Building
 
