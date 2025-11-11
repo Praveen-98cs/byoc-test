@@ -895,3 +895,16 @@ services.(*IncidentProcessor).collectIncidentData\n\t/choreo-rca/internal/servic
         print_status "Removed test logs"
     fi
 }   
+
+# Test invalid endpoints
+test_invalid_endpoints() {
+    echo "" | tee -a $LOG_FILE
+    echo "Testing invalid endpoints..." | tee -a $LOG_FILE
+    
+    response=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/invalid")
+    if [[ $response == "404" ]]; then
+        echo "✓ Invalid endpoint correctly returns 404" | tee -a $LOG_FILE
+    else
+        echo "✗ Invalid endpoint test failed (got $response)" | tee -a $LOG_FILE
+    fi
+}

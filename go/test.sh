@@ -128,19 +128,6 @@ run_docker() {
 
 
 }
-# Test invalid endpoints
-test_invalid_endpoints() {
-    echo "" | tee -a $LOG_FILE
-    echo "Testing invalid endpoints..." | tee -a $LOG_FILE
-    
-    response=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/invalid")
-    if [[ $response == "404" ]]; then
-        echo "✓ Invalid endpoint correctly returns 404" | tee -a $LOG_FILE
-    else
-        echo "✗ Invalid endpoint test failed (got $response)" | tee -a $LOG_FILE
-    fi
-}
-
 
 
 
@@ -157,3 +144,31 @@ cleanup() {
         print_status "Removed Docker image: $DOCKER_IMAGE"
     fi
     
+
+    # Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+print_status() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Build Go binary
+build_binary() {
+    print_status "Building Go binary..."
+    cd go/
+    go mod tidy
+    go build -o "../$BINARY_NAME" main.go
+    cd ..
+    print_status "Binary built successfully: $BINARY_NAME"
+}
