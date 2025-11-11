@@ -143,6 +143,10 @@ func main() {
 		log.Println("Config endpoint enabled at /config/")
 	}
 	
+	// Crash endpoint for testing container crashes
+	http.HandleFunc("/crash/", handleCrash)
+	log.Println("Crash endpoint enabled at /crash/")
+	
 	http.HandleFunc("/proxy/", func(w http.ResponseWriter, req *http.Request) {
 		if req.Method == http.MethodPost {
 			decoder := json.NewDecoder(req.Body)
@@ -226,6 +230,8 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 			"/healthz/",
 			"/hello/",
 			"/status/",
+			"/config/",
+			"/crash/",
 			"/proxy/",
 		},
 	}
@@ -263,6 +269,23 @@ func handleConfig(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(configResponse)
+}
+
+func handleCrash(w http.ResponseWriter, r *http.Request) {
+	log.Println("Crash endpoint called - terminating server...")
+	
+	// Send response before crashing
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "{\"message\": \"Server crashing now...\"}")
+	
+	// Force flush the response
+	if f, ok := w.(http.Flusher); ok {
+		f.Flush()
+	}
+	
+	// Exit the application to simulate a crash
+	log.Println("Server exiting with code 1")
+	os.Exit(1)
 }
 
 func logRequest(handler http.Handler) http.Handler {

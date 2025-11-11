@@ -111,6 +111,21 @@ Returns the current application configuration, showing all active settings.
 curl http://localhost:9090/config/
 ```
 
+#### `GET /crash/`
+Terminates the server immediately to simulate a container crash. Useful for testing container orchestration, restart policies, and crash recovery.
+
+**Response:**
+```json
+{"message": "Server crashing now..."}
+```
+
+**Example:**
+```bash
+curl http://localhost:9090/crash/
+```
+
+**Note:** The server will exit with code 1 immediately after responding. This is intended for testing purposes only.
+
 #### `POST /proxy/`
 Proxies requests to external APIs.
 

@@ -83,6 +83,24 @@ paths:
               schema:
                 type: string
               examples: {}
+  /crash/:
+    get:
+      description: Terminates the server immediately to simulate a container crash (for testing purposes)
+      responses:
+        '200':
+          description: Response sent before server terminates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server crashing now...
+              examples:
+                '0':
+                  value: |
+                    {"message": "Server crashing now..."}
   /status/:
     get:
       description: Returns server status, memory metrics, and runtime information
