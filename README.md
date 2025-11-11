@@ -153,27 +153,27 @@ The application supports configuration through both **environment variables** an
 
 #### Configuration Priority (highest to lowest):
 1. **Environment Variables** (highest priority)
-2. **Configuration File** (if `CONFIG_FILE_PATH` is set)
+2. **Configuration File** (if `CONFIG_PATH` is set)
 3. **Default Values** (hardcoded defaults)
 
 #### Environment Variables
 
 You can configure the application using these environment variables:
 
-- `CONFIG_FILE_PATH`: Path to configuration file (e.g., `/config/app-config.json`)
-- `SERVER_PORT`: Server port (default: `9090`)
+- `CONFIG_PATH`: Path to configuration file (e.g., `/config/app-config.json`)
+- `PORT`: Server port (default: `9090`)
 - `LOG_LEVEL`: Logging level - `info`, `debug`, `error` (default: `info`)
-- `PROXY_DEFAULT_HOST`: Default host for proxy requests (default: `http://postman-echo.com`)
-- `PROXY_DEFAULT_PATH`: Default path for proxy requests (default: `get?foo1=bar1&foo2=bar2`)
-- `REQUEST_TIMEOUT`: Request timeout in seconds (default: `30`)
-- `ENABLE_STATUS_ENDPOINT`: Enable/disable status endpoint - `true`/`false` (default: `true`)
-- `ENABLE_CONFIG_ENDPOINT`: Enable/disable config endpoint - `true`/`false` (default: `true`)
+- `PROXY_HOST`: Default host for proxy requests (default: `http://postman-echo.com`)
+- `PROXY_PATH`: Default path for proxy requests (default: `get?foo1=bar1&foo2=bar2`)
+- `TIMEOUT`: Request timeout in seconds (default: `30`)
+- `ENABLE_STATUS`: Enable/disable status endpoint - `true`/`false` (default: `true`)
+- `ENABLE_CONFIG`: Enable/disable config endpoint - `true`/`false` (default: `true`)
 
 **Example using environment variables:**
 ```bash
-export SERVER_PORT=8080
+export PORT=8080
 export LOG_LEVEL=debug
-export PROXY_DEFAULT_HOST=https://api.example.com
+export PROXY_HOST=https://api.example.com
 go run main.go
 ```
 
@@ -202,7 +202,7 @@ You can provide a JSON configuration file and set its path via the `CONFIG_FILE_
 
 **Example using file mount:**
 ```bash
-export CONFIG_FILE_PATH=/config/app-config.json
+export CONFIG_PATH=/config/app-config.json
 go run main.go
 ```
 
@@ -210,12 +210,12 @@ go run main.go
 
 **Option 1: Environment Variables Only**
 - In Choreo UI, add key-value pairs as environment variables
-- Set individual values like `SERVER_PORT=8080`, `LOG_LEVEL=debug`
+- Set individual values like `PORT=8080`, `LOG_LEVEL=debug`
 
 **Option 2: File Mount Only**
 - In Choreo UI, create a file mount at `/config/app-config.json`
 - Add your JSON configuration as the file content
-- Set environment variable: `CONFIG_FILE_PATH=/config/app-config.json`
+- Set environment variable: `CONFIG_PATH=/config/app-config.json`
 
 **Option 3: Both (Recommended)**
 - Use file mount for base configuration

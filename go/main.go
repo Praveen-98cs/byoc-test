@@ -50,8 +50,8 @@ func loadConfig() Config {
 	config.Features.EnableStatusEndpoint = true
 	config.Features.EnableConfigEndpoint = true
 	
-	// Load from config file if CONFIG_FILE_PATH is set
-	if configPath := os.Getenv("CONFIG_FILE_PATH"); configPath != "" {
+	// Load from config file if CONFIG_PATH is set
+	if configPath := os.Getenv("CONFIG_PATH"); configPath != "" {
 		log.Printf("Loading configuration from file: %s", configPath)
 		if data, err := ioutil.ReadFile(configPath); err == nil {
 			if err := json.Unmarshal(data, &config); err != nil {
@@ -65,7 +65,7 @@ func loadConfig() Config {
 	}
 	
 	// Override with environment variables (highest priority)
-	if port := os.Getenv("SERVER_PORT"); port != "" {
+	if port := os.Getenv("PORT"); port != "" {
 		if p, err := strconv.Atoi(port); err == nil {
 			config.Server.Port = p
 			log.Printf("Server port overridden by env var: %d", p)
@@ -77,29 +77,29 @@ func loadConfig() Config {
 		log.Printf("Log level overridden by env var: %s", logLevel)
 	}
 	
-	if host := os.Getenv("PROXY_DEFAULT_HOST"); host != "" {
+	if host := os.Getenv("PROXY_HOST"); host != "" {
 		config.Proxy.DefaultHost = host
 		log.Printf("Proxy default host overridden by env var: %s", host)
 	}
 	
-	if path := os.Getenv("PROXY_DEFAULT_PATH"); path != "" {
+	if path := os.Getenv("PROXY_PATH"); path != "" {
 		config.Proxy.DefaultPath = path
 		log.Printf("Proxy default path overridden by env var: %s", path)
 	}
 	
-	if timeout := os.Getenv("REQUEST_TIMEOUT"); timeout != "" {
+	if timeout := os.Getenv("TIMEOUT"); timeout != "" {
 		if t, err := strconv.Atoi(timeout); err == nil {
 			config.Proxy.RequestTimeoutSeconds = t
 			log.Printf("Request timeout overridden by env var: %d", t)
 		}
 	}
 	
-	if enable := os.Getenv("ENABLE_STATUS_ENDPOINT"); enable != "" {
+	if enable := os.Getenv("ENABLE_STATUS"); enable != "" {
 		config.Features.EnableStatusEndpoint = enable == "true"
 		log.Printf("Status endpoint enabled: %v", config.Features.EnableStatusEndpoint)
 	}
 	
-	if enable := os.Getenv("ENABLE_CONFIG_ENDPOINT"); enable != "" {
+	if enable := os.Getenv("ENABLE_CONFIG"); enable != "" {
 		config.Features.EnableConfigEndpoint = enable == "true"
 		log.Printf("Config endpoint enabled: %v", config.Features.EnableConfigEndpoint)
 	}
@@ -262,8 +262,8 @@ func handleConfig(w http.ResponseWriter, r *http.Request) {
 			"enableConfigEndpoint": appConfig.Features.EnableConfigEndpoint,
 		},
 		"configSource": map[string]interface{}{
-			"filePathEnvVar": os.Getenv("CONFIG_FILE_PATH"),
-			"loadedFromFile": os.Getenv("CONFIG_FILE_PATH") != "",
+			"filePathEnvVar": os.Getenv("CONFIG_PATH"),
+			"loadedFromFile": os.Getenv("CONFIG_PATH") != "",
 		},
 	}
 
