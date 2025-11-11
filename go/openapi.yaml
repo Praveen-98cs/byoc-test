@@ -170,3 +170,84 @@ paths:
               examples:
                 '0':
                   value: Method not allowed
+  /config/:
+    get:
+      description: Returns the current application configuration including server settings, proxy defaults, and feature flags
+      responses:
+        '200':
+          description: Current configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  server:
+                    type: object
+                    properties:
+                      port:
+                        type: integer
+                        example: 9090
+                      logLevel:
+                        type: string
+                        example: info
+                  proxy:
+                    type: object
+                    properties:
+                      defaultHost:
+                        type: string
+                        example: http://postman-echo.com
+                      defaultPath:
+                        type: string
+                        example: get?foo1=bar1&foo2=bar2
+                      requestTimeoutSeconds:
+                        type: integer
+                        example: 30
+                  features:
+                    type: object
+                    properties:
+                      enableStatusEndpoint:
+                        type: boolean
+                        example: true
+                      enableConfigEndpoint:
+                        type: boolean
+                        example: true
+                  configSource:
+                    type: object
+                    properties:
+                      filePathEnvVar:
+                        type: string
+                        example: /config/app-config.json
+                      loadedFromFile:
+                        type: boolean
+                        example: true
+              examples:
+                '0':
+                  value: |
+                    {
+                      "server": {
+                        "port": 9090,
+                        "logLevel": "info"
+                      },
+                      "proxy": {
+                        "defaultHost": "http://postman-echo.com",
+                        "defaultPath": "get?foo1=bar1&foo2=bar2",
+                        "requestTimeoutSeconds": 30
+                      },
+                      "features": {
+                        "enableStatusEndpoint": true,
+                        "enableConfigEndpoint": true
+                      },
+                      "configSource": {
+                        "filePathEnvVar": "/config/app-config.json",
+                        "loadedFromFile": true
+                      }
+                    }
+        '405':
+          description: Method not allowed - only GET is supported
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                '0':
+                  value: Method not allowed
