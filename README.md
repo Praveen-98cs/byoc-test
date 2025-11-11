@@ -80,6 +80,37 @@ Returns comprehensive server metrics including memory usage, runtime information
 curl http://localhost:9090/status/
 ```
 
+#### `GET /config/`
+Returns the current application configuration, showing all active settings.
+
+**Response:**
+```json
+{
+  "server": {
+    "port": 9090,
+    "logLevel": "info"
+  },
+  "proxy": {
+    "defaultHost": "http://postman-echo.com",
+    "defaultPath": "get?foo1=bar1&foo2=bar2",
+    "requestTimeoutSeconds": 30
+  },
+  "features": {
+    "enableStatusEndpoint": true,
+    "enableConfigEndpoint": true
+  },
+  "configSource": {
+    "filePathEnvVar": "/config/app-config.json",
+    "loadedFromFile": true
+  }
+}
+```
+
+**Example:**
+```bash
+curl http://localhost:9090/config/
+```
+
 #### `POST /proxy/`
 Proxies requests to external APIs.
 
@@ -101,10 +132,80 @@ curl -X POST http://localhost:9090/proxy/ \
   }'
 ```
 
-### Environment Variables
+### Configuration
 
-- `HOST`: Default host for proxy requests (default: `http://postman-echo.com`)
-- `PATH`: Default path for proxy requests (default: `get?foo1=bar1&foo2=bar2`)
+The application supports configuration through both **environment variables** and **file mounts**, making it easy to deploy on platforms like Choreo.
+
+#### Configuration Priority (highest to lowest):
+1. **Environment Variables** (highest priority)
+2. **Configuration File** (if `CONFIG_FILE_PATH` is set)
+3. **Default Values** (hardcoded defaults)
+
+#### Environment Variables
+
+You can configure the application using these environment variables:
+
+- `CONFIG_FILE_PATH`: Path to configuration file (e.g., `/config/app-config.json`)
+- `SERVER_PORT`: Server port (default: `9090`)
+- `LOG_LEVEL`: Logging level - `info`, `debug`, `error` (default: `info`)
+- `PROXY_DEFAULT_HOST`: Default host for proxy requests (default: `http://postman-echo.com`)
+- `PROXY_DEFAULT_PATH`: Default path for proxy requests (default: `get?foo1=bar1&foo2=bar2`)
+- `REQUEST_TIMEOUT`: Request timeout in seconds (default: `30`)
+- `ENABLE_STATUS_ENDPOINT`: Enable/disable status endpoint - `true`/`false` (default: `true`)
+- `ENABLE_CONFIG_ENDPOINT`: Enable/disable config endpoint - `true`/`false` (default: `true`)
+
+**Example using environment variables:**
+```bash
+export SERVER_PORT=8080
+export LOG_LEVEL=debug
+export PROXY_DEFAULT_HOST=https://api.example.com
+go run main.go
+```
+
+#### Configuration File (File Mount)
+
+You can provide a JSON configuration file and set its path via the `CONFIG_FILE_PATH` environment variable.
+
+**Example `config.json`:**
+```json
+{
+  "server": {
+    "port": 9090,
+    "logLevel": "info"
+  },
+  "proxy": {
+    "defaultHost": "http://postman-echo.com",
+    "defaultPath": "get?foo1=bar1&foo2=bar2",
+    "requestTimeoutSeconds": 30
+  },
+  "features": {
+    "enableStatusEndpoint": true,
+    "enableConfigEndpoint": true
+  }
+}
+```
+
+**Example using file mount:**
+```bash
+export CONFIG_FILE_PATH=/config/app-config.json
+go run main.go
+```
+
+#### Using with Choreo
+
+**Option 1: Environment Variables Only**
+- In Choreo UI, add key-value pairs as environment variables
+- Set individual values like `SERVER_PORT=8080`, `LOG_LEVEL=debug`
+
+**Option 2: File Mount Only**
+- In Choreo UI, create a file mount at `/config/app-config.json`
+- Add your JSON configuration as the file content
+- Set environment variable: `CONFIG_FILE_PATH=/config/app-config.json`
+
+**Option 3: Both (Recommended)**
+- Use file mount for base configuration
+- Use environment variables for overrides and secrets
+- Environment variables take precedence over file configuration
 
 ### Building
 
