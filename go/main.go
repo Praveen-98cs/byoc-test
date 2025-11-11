@@ -7,8 +7,16 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
+	"time"
 )
+
+var startTime time.Time
+
+func init() {
+	startTime = time.Now()
+}
 
 func main() {
 	httpPort := 9090
@@ -25,6 +33,7 @@ func main() {
 	http.HandleFunc("/hello/", func(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(w, "Hello %s", req.URL.Query().Get("name"))
 	})
+	http.HandleFunc("/status/", handleStatus)
 	http.HandleFunc("/proxy/", func(w http.ResponseWriter, req *http.Request) {
 		if req.Method == http.MethodPost {
 			decoder := json.NewDecoder(req.Body)
@@ -79,6 +88,47 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func handleStatus(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+
+	uptime := time.Since(startTime)
+
+	status := map[string]interface{}{
+		"server": map[string]interface{}{
+			"status":    "running",
+			"uptime":    uptime.String(),
+			"startTime": startTime.Format(time.RFC3339),
+		},
+		"memory": map[string]interface{}{
+			"allocatedMB":  memStats.Alloc / 1024 / 1024,
+			"totalAllocMB": memStats.TotalAlloc / 1024 / 1024,
+			"sysMB":        memStats.Sys / 1024 / 1024,
+			"numGC":        memStats.NumGC,
+		},
+		"runtime": map[string]interface{}{
+			"numGoroutines": runtime.NumGoroutine(),
+			"goVersion":     runtime.Version(),
+			"numCPU":        runtime.NumCPU(),
+		},
+		"endpoints": []string{
+			"/",
+			"/healthz/",
+			"/hello/",
+			"/status/",
+			"/proxy/",
+		},
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(status)
 }
 
 func logRequest(handler http.Handler) http.Handler {

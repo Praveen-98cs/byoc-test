@@ -83,3 +83,90 @@ paths:
               schema:
                 type: string
               examples: {}
+  /status/:
+    get:
+      description: Returns server status, memory metrics, and runtime information
+      responses:
+        '200':
+          description: Server status information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  server:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: running
+                      uptime:
+                        type: string
+                        example: 1h23m45s
+                      startTime:
+                        type: string
+                        format: date-time
+                        example: '2025-11-11T10:30:00Z'
+                  memory:
+                    type: object
+                    properties:
+                      allocatedMB:
+                        type: integer
+                        example: 12
+                      totalAllocMB:
+                        type: integer
+                        example: 25
+                      sysMB:
+                        type: integer
+                        example: 50
+                      numGC:
+                        type: integer
+                        example: 5
+                  runtime:
+                    type: object
+                    properties:
+                      numGoroutines:
+                        type: integer
+                        example: 10
+                      goVersion:
+                        type: string
+                        example: go1.21.0
+                      numCPU:
+                        type: integer
+                        example: 8
+                  endpoints:
+                    type: array
+                    items:
+                      type: string
+                    example: ["/", "/healthz/", "/hello/", "/status/", "/proxy/"]
+              examples:
+                '0':
+                  value: |
+                    {
+                      "server": {
+                        "status": "running",
+                        "uptime": "2h15m30s",
+                        "startTime": "2025-11-11T10:30:00Z"
+                      },
+                      "memory": {
+                        "allocatedMB": 12,
+                        "totalAllocMB": 25,
+                        "sysMB": 50,
+                        "numGC": 5
+                      },
+                      "runtime": {
+                        "numGoroutines": 10,
+                        "goVersion": "go1.21.0",
+                        "numCPU": 8
+                      },
+                      "endpoints": ["/", "/healthz/", "/hello/", "/status/", "/proxy/"]
+                    }
+        '405':
+          description: Method not allowed - only GET is supported
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                '0':
+                  value: Method not allowed
