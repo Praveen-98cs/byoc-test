@@ -1,0 +1,15 @@
+{
+  "server": {
+    "port": 9090,
+    "logLevel": "info"
+  },
+  "proxy": {
+    "defaultHost": "http://postman-echo.com",
+    "defaultPath": "get?foo1=bar1&foo2=bar2",
+    "requestTimeoutSeconds": 30
+  },
+  "features": {
+    "enableStatusEndpoint": true,
+    "enableConfigEndpoint": true
+  }
+}
