@@ -44,15 +44,19 @@ func simulateOOMKill() {
 	chunkSize := 500 * 1024 * 1024 // 100MB chunks
 	log.Printf("Chunk size configured: %d MB", chunkSize/(1024*1024))
 	for {
-		log.Printf("Allocating memory chunk %d (%d MB)...", len(memory)+1, chunkSize/(1024*1024))
+		log.Printf("Allocating memory to the chunk %d (%d MB)...", len(memory)+1, chunkSize/(1024*1024))
 		memory = append(memory, make([]byte, chunkSize))
 		allocatedMB := len(memory) * 500
-		log.Printf("Allocated memory: %d MB", allocatedMB)
+		log.Printf("Allocated new memory: %d MB", allocatedMB)
 		// Fill the allocated memory with non-zero values
-		log.Println("Starting to fill memory chunk with data...")
+		log.Println("Starting memory data...")
 		for i := range memory[len(memory)-1] {
 			memory[len(memory)-1][i] = byte(i % 256)
 		}
+		log.Printf("Memory chunk %d filled with data", len(memory))
+		log.Printf("Total chunks allocated: %d", len(memory))
+		log.Printf("Memory chunk %d filled with data", len(memory))
+		log.Printf("Total chunks allocated: %d", len(memory))
 		log.Printf("Memory chunk %d filled with data", len(memory))
 		log.Printf("Total chunks allocated: %d", len(memory))
 	}

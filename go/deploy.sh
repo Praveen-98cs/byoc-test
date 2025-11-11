@@ -667,19 +667,6 @@ run_tests() {
 }
 
 
-# Check requirements
-check_requirements() {
-    print_status "Checking requirements..."
-    if ! command -v go &> /dev/null; then               
-        print_error "Go is not installed. Please install Go to proceed."
-        exit 1
-    fi  
-
-    if ! command -v docker &> /dev/null; then
-        print_error "Docker is not installed. Please install Docker to proceed."
-        exit 1
-    fi
-}
 
 
 # Main logic
@@ -842,20 +829,7 @@ case "${1:-help}" in
         ;;
     "test")
         run_tests
-        ;;
-    "check")
-        check_requirements
-        ;;
-    "clean")
-        cleanup
-        ;;
-    "help"|"")
-        show_usage
-        ;;
-    *)
-        print_error "Unknown command: $1"
-        show_usage
-        exit 1
+
         ;;
 esac
 
@@ -894,22 +868,6 @@ build_docker() {
     print_status "Docker image built successfully: $DOCKER_IMAGE"
 }
 
-# Run locally
-run_local() {
-    print_status "Running locally..."
-    if [ -f "$BINARY_NAME" ]; then
-        ./"$BINARY_NAME"
-    else
-        print_error "Binary not found. Run build first."
-        exit 1
-    fi
-}
-
-# Run with Docker
-run_docker() {
-    print_status "Running with Docker..."
-    docker run -p 9090:9090 "$DOCKER_IMAGE"
-}
 
 # Clean up
 cleanup() {
@@ -917,6 +875,13 @@ cleanup() {
     if [ -f "$BINARY_NAME" ]; then
         rm "$BINARY_NAME"
         print_status "Removed binary: $BINARY_NAME"
+
+
+SERVER_URL="http://localhost:9090"
+LOG_FILE="test_results.log"
+
+"error":"failed to fetch environment template ID: unexpected status code 403: {\"error_message\":\"The access token does not allow you to access the requested resource\",\"code\":\"900910\",\"error_description\":\"User is NOT authorized to access the Resource: /api/v1/organizations/*. Scope validation failed.\"}","stacktrace":"github.com/wso2-enterprise/choreo-rca/internal/
+services.(*IncidentProcessor).collectIncidentData\n\t/choreo-rca/internal/services/incident_processor.go:136\ngithub.com/wso2-enterprise/choreo-rca/internal/services.(*IncidentProcessor).ProcessIncident\n\t/choreo-rca/internal/services/incident_processor.go:70\ngithub.com/wso2-enterprise/choreo-rca/internal/services.(*EventScanner).incidentProcessingWorker\n\t/choreo-rca/internal/services/event_scanner.go:202"}    
     fi
     
     if docker images | grep -q "$PROJECT_NAME"; then
@@ -929,64 +894,17 @@ cleanup() {
         rm "test_results.log"
         print_status "Removed test logs"
     fi
-}
+}   
 
-# Run tests
-run_tests() {
-    print_status "Running automated tests..."
-    if [ -f "test.sh" ]; then
-        ./test.sh
+# Test invalid endpoints
+test_invalid_endpoints() {
+    echo "" | tee -a $LOG_FILE
+    echo "Testing invalid endpoints..." | tee -a $LOG_FILE
+    
+    response=$(curl -s -o /dev/null -w "%{http_code}" "$SERVER_URL/invalid")
+    if [[ $response == "404" ]]; then
+        echo "✓ Invalid endpoint correctly returns 404" | tee -a $LOG_FILE
     else
-        print_error "Test script not found: test.sh"
-        exit 1
+        echo "✗ Invalid endpoint test failed (got $response)" | tee -a $LOG_FILE
     fi
 }
-
-
-# Check requirements
-check_requirements() {
-    print_status "Checking requirements..."
-    if ! command -v go &> /dev/null; then               
-        print_error "Go is not installed. Please install Go to proceed."
-        exit 1
-    fi  
-
-    if ! command -v docker &> /dev/null; then
-        print_error "Docker is not installed. Please install Docker to proceed."
-        exit 1
-    fi
-}
-
-
-# Main logic
-case "${1:-help}" in
-    "build")
-        build_binary
-        ;;
-    "docker")
-        build_docker
-        ;;
-    "run")
-        run_local
-        ;;
-    "run-docker")
-        run_docker
-        ;;
-    "test")
-        run_tests
-        ;;
-    "check")
-        check_requirements
-        ;;
-    "clean")
-        cleanup
-        ;;
-    "help"|"")
-        show_usage
-        ;;
-    *)
-        print_error "Unknown command: $1"
-        show_usage
-        exit 1
-        ;;
-esac
