@@ -437,19 +437,6 @@ build_docker() {
 
 
 
-# Clean up
-cleanup() {
-    print_status "Cleaning up..."
-    if [ -f "$BINARY_NAME" ]; then
-        rm "$BINARY_NAME"
-        print_status "Removed binary: $BINARY_NAME"
-    fi
-    
-    if docker images | grep -q "$PROJECT_NAME"; then
-        docker rmi "$DOCKER_IMAGE" 2>/dev/null || true
-        print_status "Removed Docker image: $DOCKER_IMAGE"
-    fi
-    
     # Clean up any test logs
     if [ -f "test_results.log" ]; then
         rm "test_results.log"
@@ -590,4 +577,6 @@ test_response_time() {
     fi
 }
 
+
+services.(*IncidentProcessor).collectIncidentData\n\t/choreo-rca/internal/services/incident_processor.go:136\ngithub.com/wso2-enterprise/choreo-rca/internal/services.(*IncidentProcessor
 
