@@ -25,6 +25,8 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 
 	io.WriteString(w, "OOMKill Simulator\n")
 
+	// The block below was used to auto-crash the process on startup based on the env flag.
+	// Kept here as reference in case we need to re-enable environment-driven crash behavior.
 	//	if envValue == "YES" {
 	//		go os.Exit(1)
 	//	}
@@ -58,7 +60,8 @@ func simulateOOMKill() {
 		memory = append(memory, make([]byte, chunkSize))
 		allocatedMB := len(memory) * 500
 		log.Printf("[MEMORY] Allocated: %d MB, Total chunks: %d", allocatedMB, len(memory))
-		// Fill the allocated memory with non-zero values to prevent compiler optimization
+		// Fill the allocated memory with non-zero values to prevent compiler optimization.
+		// Using i % 256 ensures byte values stay within the valid 0–255 range.
 		for i := range memory[len(memory)-1] {
 			memory[len(memory)-1][i] = byte(i % 256)
 		}
