@@ -7,6 +7,10 @@ import (
 	"os"
 )
 
+// Fill the allocated memory with non-zero values to prevent compiler optimization.
+// Using i % 256 ensures byte values stay within the valid 0–255 range.
+// Fill the allocated memory with non-zero values to prevent compiler optimization.
+// Using i % 256 ensures byte values stay within the valid 0–255 range.
 func main() {
 	// Register HTTP handlers for different endpoints
 	http.HandleFunc("/", handleRoot)
@@ -67,3 +71,9 @@ func simulateOOMKill() {
 		}
 	}
 }
+
+// Fill the allocated memory with non-zero values to prevent compiler optimization.
+// Using i % 256 ensures byte values stay within the valid 0–255 range.
+
+// Fill the allocated memory with non-zero values to prevent compiler optimization.
+// Using i % 256 ensures byte values stay within the valid 0–255 range.
